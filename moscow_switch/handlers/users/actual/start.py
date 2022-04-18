@@ -7,6 +7,7 @@ from aiogram import types
 
 from sql import ActPlace, IventItem, User, UserStat, IventStatistic
 from states import ACT, Ivent, Anketa
+from keyboards.inline import interes_kb, profi_kb
 
 
 @dp.message_handler(Text(contains='Актуальное на этой неделе', ignore_case=True))
@@ -15,7 +16,7 @@ async def start(message: Message):
 
     if user.age == None:
         await message.answer("Похоже вы у нас в первый раз, заполните анкету о себе чтобы начать общаться с другими.")
-        await message.answer("Пришлите ваше фото")
+        await message.answer("Пришлите ваше фото", reply_markup=ReplyKeyboardRemove())
         await Anketa.photo.set()
         return 0
 
@@ -109,27 +110,161 @@ async def select_place(c: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(content_types=['photo'], state=Anketa.photo)
-async def set_photo(message: types.Message):
+async def set_photo(message: types.Message, state: FSMContext):
     user = User.get(User.tg_id == message.from_user.id)
     user.photo = message.photo[-1].file_id
     user.save()
+    
+    data = {
+            'market': '❌',
+            'konsalt': '❌',
+            'bloger': '❌',
+            'freelancer': '❌',
+            'design': '❌',
+            'shop': '❌',
+            'buissnes': '❌',
+            'iskustvo': '❌',
+            'buti': '❌',
+            'it': '❌',
+            'psih': '❌',
+            'eat': '❌',
+            'stroy': '❌',
+            'soc': '❌'
+    }
+
+    await state.update_data(data)
 
     await Anketa.profi.set()
-    await message.answer("Напиши о своей профессии, кем ты работаешь?", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Кем ты работаешь? Можно выбрать несколько вариантов или написать свой.", reply_markup=profi_kb(data))
+
+
+@dp.callback_query_handler(state=Anketa.profi)
+async def set_profi_kb(c: types.CallbackQuery, state: FSMContext):
+    if c.data == 'compleet':
+        data = await state.get_data()
+        data_text = {
+            'market': 'Маркетинг',
+            'konsalt': 'Консалтинг',
+            'bloger': 'Блогер',
+            'freelancer': 'Фрилансер',
+            'design': 'Дизайн',
+            'shop': 'Торговля',
+            'buissnes': 'Предприниматель',
+            'iskustvo': 'Творческий поиск',
+            'buti': 'Бьюти',
+            'it': 'Программист',
+            'psih': 'Психолог',
+            'eat': 'Рестораны',
+            'stroy': 'Строительство',
+            'soc': 'Соц работник'
+        }
+
+        text = ''
+
+        for el in data:
+            if data[el] == '✅':
+                text += f'{data_text[el]}, '
+
+        text = text[:-2]
+
+        user = User.get(User.tg_id == c.from_user.id)
+        user.profession = text
+        user.save()
+
+        data = {
+            'sport': '❌',
+            'walk': '❌',
+            'osozn': '❌',
+            'mistik': '❌',
+            'money': '❌',
+            'dance': '❌',
+            'health': '❌',
+            'alko': '❌',
+            'musik': '❌',
+            'moda': '❌',
+        }
+
+        await state.finish()
+        await Anketa.field_activity.set()
+        await state.update_data(data)
+
+        await c.message.edit_text(text="Выбери что тебе интересно. Можно выбрать несколько или написать свой вариант.", reply_markup=interes_kb(data))
+
+    else:
+        data = await state.get_data()
+        data[c.data] = '✅' if data[c.data] == '❌' else '❌'
+        await state.update_data(data)
+
+        await c.message.edit_text(text="Кем ты работаешь? Можно выбрать несколько вариантов или написать свой.", reply_markup=profi_kb(data))
 
 
 @dp.message_handler(state=Anketa.profi)
-async def set_interes(message: types.Message):
+async def set_interes(message: types.Message, state: FSMContext):
     user = User.get(User.tg_id == message.from_user.id)
     user.profession = message.text
     user.save()
 
+    data = {
+        'sport': '❌',
+        'walk': '❌',
+        'osozn': '❌',
+        'mistik': '❌',
+        'money': '❌',
+        'dance': '❌',
+        'health': '❌',
+        'alko': '❌',
+        'musik': '❌',
+        'moda': '❌',
+    }
+
+    await state.update_data(data)
+
     await Anketa.field_activity.set()
-    await message.answer("Напиши о своих интересах, чем ты увлекаешься?", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Выбери что тебе интересно. Можно выбрать несколько или написать свой вариант.", reply_markup=interes_kb(data))
+
+
+@dp.callback_query_handler(state=Anketa.field_activity)
+async def set_interes_kb(c: types.CallbackQuery, state: FSMContext):
+    if c.data == 'compleet':
+        data = await state.get_data()
+        data_text = {
+            'sport': 'спорт',
+            'walk': 'путешествия',
+            'osozn': 'осознанность',
+            'mistik': 'мистика',
+            'money': 'финансы',
+            'dance': 'тусовки',
+            'health': 'ЗОЖ',
+            'alko': 'винишко',
+            'musik': 'музыка',
+            'moda': 'мода',
+        }
+
+        text = ''
+
+        for el in data:
+            if data[el] == '✅':
+                text += f'{data_text[el]}, '
+
+        text = text[:-2]
+
+        user = User.get(User.tg_id == c.from_user.id)
+        user.field_activity = text
+        user.save()
+
+        await Anketa.lenght.set()
+        await c.message.answer("Какого вы роста(в см):")
+
+    else:
+        data = await state.get_data()
+        data[c.data] = '✅' if data[c.data] == '❌' else '❌'
+        await state.update_data(data)
+
+        await c.message.edit_text(text="Выбери что тебе интересно. Можно выбрать несколько или написать свой вариант.", reply_markup=interes_kb(data))
 
 
 @dp.message_handler(state=Anketa.field_activity)
-async def activity(message: types.Message):
+async def activity(message: types.Message, state: FSMContext):
     text = message.text
     if len(text) > 10:
 
@@ -141,9 +276,9 @@ async def activity(message: types.Message):
         await message.answer("Какого вы роста(в см):")
 
     else:
-
+        data = await state.get_data()
         await Anketa.field_activity.set()
-        await message.answer("Слишком коротко, напишите более подробно:", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Слишком коротко, напишите более подробно или выберите из предложенных", reply_markup=interes_kb(data))
 
 
 @dp.message_handler(state=Anketa.lenght)
