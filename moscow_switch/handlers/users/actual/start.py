@@ -90,6 +90,7 @@ async def select_place(c: CallbackQuery, state: FSMContext):
     users_list = []
 
     for user in users:
+        print(user, users, c.from_user.id, users == c.from_user.id)
         if str(user) != str(c.from_user.id):
             users_list.append(user)
 
@@ -98,7 +99,7 @@ async def select_place(c: CallbackQuery, state: FSMContext):
             f"На это мероприятие собираются пойти еще {len(users_list)} человек. \nВы можете обьедениться и пойти "
             f"вместе. Показать список?",
             reply_markup=InlineKeyboardMarkup(row_width=1).add(
-                InlineKeyboardButton(text='Показать кто еще собирается на мероприятие', callback_data=f"{c.data}")
+                InlineKeyboardButton(text='Показать кто идёт', callback_data=f"{c.data}")
             ).add(
                 InlineKeyboardButton(text='Главное меню', callback_data='main_menu')
             ))

@@ -8,5 +8,6 @@ class Profile(StatesGroup):
     name = State()
     age = State()
     act = State()
+    profi = State()
     lenght = State()
     weight = State()

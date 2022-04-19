@@ -251,16 +251,6 @@ async def age(message: types.Message, state: FSMContext):
     user.age = message.text
     user.save()
 
-    data = {
-                'age_min': 0,
-                'len_min': 0,
-                'age_max': 10000,
-                'len_max': 10000,
-                'weight_min': 0,
-                'weight_max': 10000
-            }
-
     await message.answer("Главное меню",
                                  reply_markup=main_kb)
-    await Networking.started.set()
-    await state.update_data(data)
+    await state.finish()

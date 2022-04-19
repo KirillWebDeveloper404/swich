@@ -79,6 +79,6 @@ class IventItem(BaseModel):
         managed = True
 
 try:
-    ActPlace.create_table()
+    IventItem.create_table()
 except:
     pass

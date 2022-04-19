@@ -15,7 +15,7 @@ def interes_kb(data):
                         InlineKeyboardButton(text=f'{data["health"]} ЗОЖ', callback_data='health'),
                         InlineKeyboardButton(text=f'{data["alko"]} Винишко', callback_data='alko')
                 ).add(
-                        InlineKeyboardButton(text=f'{data["musik"]} Музыка', callback_data='music'),
+                        InlineKeyboardButton(text=f'{data["musik"]} Музыка', callback_data='musik'),
                         InlineKeyboardButton(text=f'{data["moda"]} Мода', callback_data='moda')
                 ).add(
                         InlineKeyboardButton(text=f'Готово', callback_data='compleet')
