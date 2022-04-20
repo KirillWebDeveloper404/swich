@@ -27,7 +27,7 @@ async def start(message: Message):
         InlineKeyboardButton(text='🙋 Имя', callback_data='edit_name')).add(
         InlineKeyboardButton(text='🔢 Возраст', callback_data='edit_age')).add(
         InlineKeyboardButton(text='🧰 Интересы', callback_data='edit_act'),).add(
-        InlineKeyboardButton(text='🧰 Вид деятельности', callback_data='edit_profi')).add(
+        InlineKeyboardButton(text='🛠 Вид деятельности', callback_data='edit_profi')).add(
         InlineKeyboardButton(text='📏 Рост', callback_data='edit_len'),
         InlineKeyboardButton(text='⚖️ Вес', callback_data='edit_weight')).add(
         InlineKeyboardButton(text='🔙 Главное меню', callback_data='main_menu'))
