@@ -11,7 +11,7 @@ from keyboards.inline import interes_kb, profi_kb
 
 
 @dp.message_handler(Text(contains='Актуальное на этой неделе', ignore_case=True))
-@dp.message_handler(Text(contains='Назад', ignore_case=True), state=ACT.started)
+@dp.message_handler(Text(contains='Назад', ignore_case=True), state=ACT.ivent)
 async def start(message: Message):
     user = User.get(User.tg_id == message.from_user.id)
 
