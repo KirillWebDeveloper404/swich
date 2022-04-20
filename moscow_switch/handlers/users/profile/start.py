@@ -17,7 +17,7 @@ async def start(message: Message):
     info = "Ваши данные: \n"
     info+=f"Имя: {user.name} \n"
     info+=f"Возраст: {user.age} \n"
-    info += f"Профессия: {user.profession} \n"
+    info += f"Вид деятельности: {user.profession} \n"
     info+=f"Интересы: {user.field_activity} \n"
     info+=f"Рост: {user.length} \n"
     info+=f"Вес: {user.weight} \n"
@@ -27,7 +27,7 @@ async def start(message: Message):
         InlineKeyboardButton(text='🙋 Имя', callback_data='edit_name')).add(
         InlineKeyboardButton(text='🔢 Возраст', callback_data='edit_age')).add(
         InlineKeyboardButton(text='🧰 Интересы', callback_data='edit_act'),).add(
-        InlineKeyboardButton(text='🧰 Профессия', callback_data='edit_profi')).add(
+        InlineKeyboardButton(text='🧰 Вид деятельности', callback_data='edit_profi')).add(
         InlineKeyboardButton(text='📏 Рост', callback_data='edit_len'),
         InlineKeyboardButton(text='⚖️ Вес', callback_data='edit_weight')).add(
         InlineKeyboardButton(text='🔙 Главное меню', callback_data='main_menu'))
@@ -51,7 +51,7 @@ async def start_c(c: CallbackQuery):
     info = "Ваши данные: \n"
     info+=f"Имя: {user.name} \n"
     info+=f"Возраст: {user.age} \n"
-    info += f"Профессия: {user.profession} \n"
+    info += f"Вид деятельности: {user.profession} \n"
     info+=f"Интересы: {user.field_activity} \n"
     info+=f"Рост: {user.length} \n"
     info+=f"Вес: {user.weight} \n"
@@ -61,7 +61,7 @@ async def start_c(c: CallbackQuery):
         InlineKeyboardButton(text='🙋 Имя', callback_data='edit_name')).add(
         InlineKeyboardButton(text='🔢 Возраст', callback_data='edit_age')).add(
         InlineKeyboardButton(text='🧰 Интересы', callback_data='edit_act'),).add(
-        InlineKeyboardButton(text='🧰 Профессия', callback_data='edit_profi')).add(
+        InlineKeyboardButton(text='🛠 Вид деятельности', callback_data='edit_profi')).add(
         InlineKeyboardButton(text='📏 Рост', callback_data='edit_len'),
         InlineKeyboardButton(text='⚖️ Вес', callback_data='edit_weight')).add(
         InlineKeyboardButton(text='🔙 Главное меню', callback_data='main_menu'))

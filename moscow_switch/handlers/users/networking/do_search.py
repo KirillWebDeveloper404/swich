@@ -89,7 +89,7 @@ async def next(c: CallbackQuery, state: FSMContext):
         info = f'#{user.tg_id}\n'
         info += f"Имя: {user.name} \n"
         info += f"Возраст: {user.age} \n"
-        info += f"Профессия: {user.profession} \n"
+        info += f"Вид деятельности: {user.profession} \n"
         info += f"Интересы: {user.field_activity} \n"
         info += f"Рост: {user.length} \n"
         info += f"Вес: {user.weight} \n"

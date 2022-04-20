@@ -1,6 +1,6 @@
 from loader import dp, bot
 
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, CallbackQuery
+from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.storage import FSMContext
 from aiogram import types
@@ -11,12 +11,15 @@ from keyboards.inline import interes_kb, profi_kb
 
 
 @dp.message_handler(Text(contains='Актуальное на этой неделе', ignore_case=True))
+@dp.message_handler(Text(contains='Назад', ignore_case=True), state=ACT.started)
 async def start(message: Message):
     user = User.get(User.tg_id == message.from_user.id)
 
     if user.age == None:
         await message.answer("Похоже вы у нас в первый раз, заполните анкету о себе чтобы начать общаться с другими.")
-        await message.answer("Пришлите ваше фото", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Пришлите ваше фото", reply_markup=ReplyKeyboardMarkup([
+        [KeyboardButton('🔙 Главное меню')]
+    ], resize_keyboard=True))
         await Anketa.photo.set()
         return 0
 
@@ -42,6 +45,10 @@ async def ivent_list(c: CallbackQuery, state: FSMContext):
     await ACT.ivent.set()
 
     places = [el for el in ActPlace.select()]
+
+    await c.message.answer("Выберите куда хотите пойти:", reply_markup=ReplyKeyboardMarkup([
+        [KeyboardButton('Назад')]
+    ], resize_keyboard=True))
 
     for place in places:
         await c.message.answer(text=f'{place.name} \n{place.desc}',
