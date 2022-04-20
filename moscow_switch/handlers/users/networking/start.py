@@ -4,7 +4,7 @@ import datetime
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.storage import FSMContext
 from aiogram import types
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 
 from keyboards.inline import search_kb, interes_kb, profi_kb
 from keyboards.default import main_kb
@@ -19,7 +19,9 @@ async def start(message: Message, state: FSMContext):
 
         if user.age == None:
             await message.answer("Похоже вы у нас в первый раз, заполните анкету о себе чтобы начать общаться с другими.")
-            await message.answer("Пришлите ваше фото", reply_markup=ReplyKeyboardRemove())
+            await message.answer("Пришлите ваше фото", reply_markup=ReplyKeyboardMarkup([
+        [KeyboardButton('🔙 Главное меню')]
+    ], resize_keyboard=True))
             await Anketa.photo.set()
             return 0
 
