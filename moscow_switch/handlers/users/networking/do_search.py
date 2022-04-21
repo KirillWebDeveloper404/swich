@@ -48,7 +48,7 @@ async def start(c: CallbackQuery, state: FSMContext):
         await Networking.started.set()
 
     except Exception as e:
-        print(e)
+        # print(e)
         data = {
             'age_min': 0,
             'len_min': 0,

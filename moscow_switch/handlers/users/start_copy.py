@@ -50,7 +50,7 @@ async def bot_start(message: types.Message, state: FSMContext):
 
 @dp.message_handler(content_types=['contact'], state=Anketa.phone)
 async def phone(message: types.Message):
-    print(message.contact)
+    # print(message.contact)
     user = User.get(User.tg_id == message.from_user.id)
     user.phone = message.contact['phone_number']
     user.tarif = 'пробный период 7 дней'

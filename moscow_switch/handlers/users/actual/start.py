@@ -97,9 +97,11 @@ async def select_place(c: CallbackQuery, state: FSMContext):
     users_list = []
 
     for user in users:
-        print(user, users, c.from_user.id, users == c.from_user.id)
         if str(user) != str(c.from_user.id):
             users_list.append(user)
+
+    _ck_ = await c.message.answer('<code>Clearing keyboard...</code>', reply_markup=ReplyKeyboardRemove())
+    await _ck_.delete()
 
     if len(users_list) > 0:
         await c.message.answer(
