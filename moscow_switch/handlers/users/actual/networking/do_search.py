@@ -21,7 +21,11 @@ async def start(c: CallbackQuery, state: FSMContext):
         user_list = []
 
         for user in users:
-            user_list.append(User.get(User.tg_id == user))
+            try:
+                if int(user.tg_id) != int(c.from_user.id) and int(user.age) > 0:
+                    user_list.append(User.get(User.tg_id == user))
+            except:
+                pass
 
         user = user_list[data['user']]
 

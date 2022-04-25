@@ -28,7 +28,7 @@ async def start(c: CallbackQuery, state: FSMContext):
                         user_list.append(user)
             except:
                 pass
-
+            
         user = user_list[data['user']]
 
         info = f'#{user.tg_id}\n'
@@ -48,7 +48,7 @@ async def start(c: CallbackQuery, state: FSMContext):
         await Networking.started.set()
 
     except Exception as e:
-        # print(e)
+        print(e)
         data = {
             'age_min': 0,
             'len_min': 0,
