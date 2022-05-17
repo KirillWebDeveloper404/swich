@@ -21,9 +21,19 @@ async def start(c: CallbackQuery, state: FSMContext):
 
         for user in users:
             try:
+                interes = False if data['field_activity'] else True
+                profi = False if data['profi'] else True
+
+                for el in data['profi']:
+                    if str(el) in str(user.profession):
+                        profi = True
+                for el in data['field_activity']:
+                    if str(el) in str(user.field_activity):
+                        interes = True
+
                 if (data['age_min'] <= int(user.age) <= data['age_max']) and (
                         data['weight_min'] <= int(user.weight) <= data['weight_max']) and (
-                        data['len_min'] <= int(user.length) <= data['len_max']):
+                        data['len_min'] <= int(user.length) <= data['len_max']) and interes and profi:
                     if str(user.tg_id) != str(c.from_user.id):
                         user_list.append(user)
             except:
@@ -35,6 +45,7 @@ async def start(c: CallbackQuery, state: FSMContext):
         info += f"Имя: {user.name} \n"
         info += f"Возраст: {user.age} \n"
         info += f"Интересы: {user.field_activity} \n"
+        info += f"Профессия: {user.profession} \n"
         info += f"Рост: {user.length} \n"
         info += f"Вес: {user.weight} \n"
 
@@ -79,9 +90,19 @@ async def next(c: CallbackQuery, state: FSMContext):
 
         for user in users:
             try:
-                if (data['age_min'] < int(user.age) < data['age_max']) and (
-                        data['weight_min'] < int(user.weight) < data['weight_max']) and (
-                        data['len_min'] < int(user.length) < data['len_max']):
+                interes = False if data['field_activity'] else True
+                profi = False if data['profi'] else True
+
+                for el in data['profi']:
+                    if str(el) in str(user.profession):
+                        profi = True
+                for el in data['field_activity']:
+                    if str(el) in str(user.field_activity):
+                        interes = True
+
+                if (data['age_min'] <= int(user.age) <= data['age_max']) and (
+                        data['weight_min'] <= int(user.weight) <= data['weight_max']) and (
+                        data['len_min'] <= int(user.length) <= data['len_max']) and interes and profi:
                     if str(user.tg_id) != str(c.from_user.id):
                         user_list.append(user)
             except:

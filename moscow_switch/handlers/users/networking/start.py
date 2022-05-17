@@ -4,7 +4,7 @@ import datetime
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.storage import FSMContext
 from aiogram import types
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
 from keyboards.inline import search_kb, interes_kb, profi_kb
 from keyboards.default import main_kb
@@ -32,12 +32,20 @@ async def start(message: Message, state: FSMContext):
                 'age_max': 10000,
                 'len_max': 10000,
                 'weight_min': 0,
-                'weight_max': 10000
+                'weight_max': 10000,
+                'field_activity': [],
+                'profi': []
             }
 
             # Clear keyboard
             _ck_ = await message.answer('<code>Clearing keyboard...</code>', reply_markup=types.ReplyKeyboardRemove())
             await _ck_.delete()
+
+            kb = InlineKeyboardMarkup()
+            link = InlineKeyboardButton(text='Перейти в чат', url='https://vk.com/')
+            kb.add(link)
+
+            await message.answer("У нас есть общий чат. Присоединяйтесь к общению, возможно вы найдете друзей", reply_markup=link)
 
             await message.answer("Здесь ты можешь найти и познакомиться с другими людьми. \nДля поиска выберите "
                                  "фильтры и "
