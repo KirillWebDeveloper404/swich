@@ -78,11 +78,14 @@ async def next(c: CallbackQuery, state: FSMContext):
         user_list = []
 
         for user in users:
-            if (data['age_min'] < int(user.age) < data['age_max']) and (
-                    data['weight_min'] < int(user.weight) < data['weight_max']) and (
-                    data['len_min'] < int(user.length) < data['len_max']):
-                if str(user.tg_id) != str(c.from_user.id):
-                    user_list.append(user)
+            try:
+                if (data['age_min'] < int(user.age) < data['age_max']) and (
+                        data['weight_min'] < int(user.weight) < data['weight_max']) and (
+                        data['len_min'] < int(user.length) < data['len_max']):
+                    if str(user.tg_id) != str(c.from_user.id):
+                        user_list.append(user)
+            except:
+                pass
 
         user = user_list[data['user']]
 
@@ -103,6 +106,7 @@ async def next(c: CallbackQuery, state: FSMContext):
         await Networking.started.set()
 
     except Exception as e:
+        # print(e)
         data = {
             'age_min': 0,
             'len_min': 0,
