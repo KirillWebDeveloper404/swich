@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.storage import FSMContext
 from aiogram import types
 
-from sql import ActPlace, IventItem, User, UserStat, IventStatistic
+from sql import ActPlace, IventItem, User, UserStat, IventStatistic, Chat
 from states import ACT, Ivent, Anketa
 from keyboards.inline import interes_kb, profi_kb
 
@@ -29,7 +29,7 @@ async def start(message: Message):
     await _ck_.delete()
 
     kb = InlineKeyboardMarkup(row_width=1)
-    link = InlineKeyboardButton(text='Перейти в чат', url='https://vk.com/')
+    link = InlineKeyboardButton(text='Перейти в чат', url=Chat.get(Chat.id == 2).link)
     places = InlineKeyboardButton(text='К мероприятиям', callback_data='to_ivents')
     main_menu = InlineKeyboardButton(text='🔙 Главное меню', callback_data='main_menu')
     kb.add(link, places, main_menu)

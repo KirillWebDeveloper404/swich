@@ -78,7 +78,16 @@ class IventItem(BaseModel):
         db_table = 'iventitems'
         managed = True
 
+class Chat(BaseModel):
+
+    name = TextField()
+    link = TextField()
+
+    class Meta:
+        db_table = 'chat'
+        managed = True
+
 try:
-    IventItem.create_table()
+    Chat.create_table()
 except:
     pass

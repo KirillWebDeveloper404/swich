@@ -131,3 +131,18 @@ class ADS_db(models.Model):
         managed = True
         verbose_name = 'ADS'
         verbose_name_plural = 'ADS'
+
+
+class Chat(models.Model):
+
+    name = models.TextField(verbose_name='Название')
+    link = models.TextField('Ссылка')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'chat'
+        managed = True
+
+    

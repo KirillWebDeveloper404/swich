@@ -9,7 +9,7 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKe
 from keyboards.inline import search_kb, interes_kb, profi_kb
 from keyboards.default import main_kb
 from states import Networking, Anketa
-from sql import User
+from sql import User, Chat
 
 
 @dp.message_handler(Text(contains='нетворкинг', ignore_case=True))
@@ -42,10 +42,10 @@ async def start(message: Message, state: FSMContext):
             await _ck_.delete()
 
             kb = InlineKeyboardMarkup()
-            link = InlineKeyboardButton(text='Перейти в чат', url='https://vk.com/')
+            link = InlineKeyboardButton(text='Перейти в чат', url=Chat.get(Chat.id == 1).link)
             kb.add(link)
 
-            await message.answer("У нас есть общий чат. Присоединяйтесь к общению, возможно вы найдете друзей", reply_markup=link)
+            await message.answer("У нас есть общий чат. Присоединяйтесь к общению, возможно вы найдете друзей", reply_markup=kb)
 
             await message.answer("Здесь ты можешь найти и познакомиться с другими людьми. \nДля поиска выберите "
                                  "фильтры и "
@@ -59,7 +59,7 @@ async def start(message: Message, state: FSMContext):
                 "Упс... \n""У вас законфилась подписка \n\nПерейдите в раздел тарифы и оплатите подписку")
 
     except Exception as e:
-        # print(e)
+        print(e)
         await message.answer("Упс... \n""У вас законфилась подписка \n\nПерейдите в раздел тарифы и оплатите подписку")
 
 

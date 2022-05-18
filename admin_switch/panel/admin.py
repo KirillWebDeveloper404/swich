@@ -46,3 +46,4 @@ class User_admin(admin.ModelAdmin):
 class Act(admin.ModelAdmin):
     list_display = ['name', 'desc']
 
+admin.site.register(Chat)
