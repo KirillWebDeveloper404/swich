@@ -59,7 +59,7 @@ async def start(message: Message, state: FSMContext):
                 "Упс... \n""У вас законфилась подписка \n\nПерейдите в раздел тарифы и оплатите подписку")
 
     except Exception as e:
-        print(e)
+        # print(e)
         await message.answer("Упс... \n""У вас законфилась подписка \n\nПерейдите в раздел тарифы и оплатите подписку")
 
 
