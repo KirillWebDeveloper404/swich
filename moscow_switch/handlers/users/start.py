@@ -39,7 +39,7 @@ async def bot_start(message: types.Message, state: FSMContext):
     if not (user.phone):
         await message.answer('Наш бот создан для знакомств, пожалуйста заполните информацию о себе')
         await Anketa.phone.set()
-        await message.answer("Ваш номер телефона:",
+        await message.answer("Ваш номер телефона (нужно нажать на кнопку, если она не появилась нажмите на иконку клавиатуры слева от скрепки)",
                              reply_markup=ReplyKeyboardMarkup(
                                  [[KeyboardButton(text='Отправить номер телефона', request_contact=True)]],
                                  resize_keyboard=True

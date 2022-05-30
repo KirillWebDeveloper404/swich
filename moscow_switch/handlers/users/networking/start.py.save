@@ -1,123 +1,66 @@
-from loader import dp, bot
+from loader import dp, Bot
 
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+import datetime
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.storage import FSMContext
 from aiogram import types
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
-from sql import ActPlace, IventItem, User, UserStat, IventStatistic, Chat
-from states import ACT, Ivent, Anketa
-from keyboards.inline import interes_kb, profi_kb
+from keyboards.inline import search_kb, interes_kb, profi_kb
+from keyboards.default import main_kb
+from states import Networking, Anketa
+from sql import User, Chat
 
 
-@dp.message_handler(Text(contains='Актуальное на этой неделе', ignore_case=True))
-@dp.message_handler(Text(contains='Назад', ignore_case=True), state=ACT.ivent)
-async def start(message: Message):
-    user = User.get(User.tg_id == message.from_user.id)
+@dp.message_handler(Text(contains='нетворкинг', ignore_case=True))
+async def start(message: Message, state: FSMContext):
+    try:
+        user = User.get(User.tg_id == message.from_user.id)
 
-    if user.age == None:
-        await message.answer("Похоже вы у нас в первый раз, заполните анкету о себе чтобы начать общаться с другими.")
-        await message.answer("Пришлите ваше фото", reply_markup=ReplyKeyboardMarkup([
+        if user.age == None:
+            await message.answer("Похоже вы у нас в первый раз, заполните анкету о себе чтобы начать общаться с другими.")
+            await message.answer("Пришлите ваше фото", reply_markup=ReplyKeyboardMarkup([
         [KeyboardButton('🔙 Главное меню')]
     ], resize_keyboard=True))
-        await Anketa.photo.set()
-        return 0
+            await Anketa.photo.set()
+            return 0
 
-    await ACT.started.set()
+        if datetime.datetime.strptime(user.dead_line.split('.')[0], "%Y-%m-%d %H:%M:%S") > datetime.datetime.today():
+            data = {
+                'age_min': 0,
+                'len_min': 0,
+                'age_max': 10000,
+                'len_max': 10000,
+                'weight_min': 0,
+                'weight_max': 10000,
+                'field_activity': [],
+                'profi': []
+            }
 
-    _ck_ = await message.answer('<code>Clearing keyboard...</code>', reply_markup=ReplyKeyboardRemove())
-    await _ck_.delete()
+            # Clear keyboard
+            _ck_ = await message.answer('<code>Clearing keyboard...</code>', reply_markup=types.ReplyKeyboardRemove())
+            await _ck_.delete()
 
-    kb = InlineKeyboardMarkup(row_width=1)
-    link = InlineKeyboardButton(text='Перейти в чат', url=Chat.get(Chat.id == 2).link)
-    places = InlineKeyboardButton(text='К мероприятиям', callback_data='to_ivents')
-    main_menu = InlineKeyboardButton(text='🔙 Главное меню', callback_data='main_menu')
-    kb.add(link, places, main_menu)
+            kb = InlineKeyboardMarkup()
+            link = InlineKeyboardButton(text='Перейти в чат', url=Chat.get(Chat.id == 1).link)
+            kb.add(link)
 
-    await message.answer('Здесь ты можешь выбрать для себя мероприятие и посмотреть кто еще на него идет. \n' \
-                         'Также у нас есть общий чат',
-                         reply_markup=kb
-                         )
+            await message.answer("У нас есть общий чат. Присоединяйтесь к общению, возможно вы найдете друзей", reply_markup=kb)
 
+            await message.answer("Здесь ты можешь найти и познакомиться с другими людьми. \nДля поиска выберите "
+                                 "фильтры и "
+link = InlineKeyboardButton(text='Перейти в чат', url=Chat.get(Chat.id == 1).link)                                  "нажмите найти",
+                                 reply_markup=search_kb)
+            await Networking.started.set()
+            await state.update_data(data)
 
-@dp.callback_query_handler(text='to_ivents', state=ACT.started)
-async def ivent_list(c: CallbackQuery, state: FSMContext):
-    await ACT.ivent.set()
+        else:
+            await message.answer(
+                "Упс... \n""У вас законфилась подписка \n\nПерейдите в раздел тарифы и оплатите подписку")
 
-    places = [el for el in ActPlace.select()]
-
-    await c.message.answer("Выберите куда хотите пойти:", reply_markup=ReplyKeyboardMarkup([
-        [KeyboardButton('Назад')]
-    ], resize_keyboard=True))
-
-    for place in places:
-        await c.message.answer(text=f'{place.name} \n{place.desc}',
-                             reply_markup=InlineKeyboardMarkup(row_width=1).add(
-                                 InlineKeyboardButton(text='Я пойду', callback_data=f'{place.id}'))
-                             )
-
-
-@dp.callback_query_handler(state=ACT.ivent)
-async def select_place(c: CallbackQuery, state: FSMContext):
-    await Ivent.networking.set()
-    await state.update_data({'user': -1})
-
-    ivent = IventItem()
-    ivent.users = c.from_user.id
-    ivent.place = str(c.data)
-    ivent.save()
-
-    try:
-        user_stat = UserStat.get(UserStat.tg_id == c.from_user.id)
-        user_stat.visit_future = str(int(user_stat.visit_future) + 1)
-        user_stat.save()
-    except:
-        user = User.get(User.tg_id == c.from_user.id)
-        user_stat = UserStat()
-        user_stat.tg_id = c.from_user.id
-        user_stat.name = user.name
-        user_stat.phone = user.phone
-        user_stat.visit_now = 0
-        user_stat.visit_future = 1
-        user_stat.save()
-
-    try:
-        ivent_stat = IventStatistic.get(IventStatistic.place_id == c.data)
-        ivent_stat.visit_future = str(int(ivent_stat.visit_future) + 1)
-        ivent_stat.save()
-    except:
-        ivent_stat = IventStatistic()
-        ivent_stat.place_id = c.data
-        ivent_stat.place = ActPlace.get(ActPlace.id == c.data).name
-        ivent_stat.visit_now = 0
-        ivent_stat.visit_future = 1
-        ivent_stat.save()
-
-    users = [el.users for el in IventItem.select().where(IventItem.place == c.data)]
-    users_list = []
-
-    for user in users:
-        if str(user) != str(c.from_user.id):
-            users_list.append(user)
-
-    _ck_ = await c.message.answer('<code>Clearing keyboard...</code>', reply_markup=ReplyKeyboardRemove())
-    await _ck_.delete()
-
-    if len(users_list) > 0:
-        await Ivent.networking.set()
-        await c.message.answer(
-            f"На это мероприятие собираются пойти еще {len(users_list)} человек. \nВы можете обьедениться и пойти "
-            f"вместе. Показать список?",
-            reply_markup=InlineKeyboardMarkup(row_width=1).add(
-                InlineKeyboardButton(text='Показать кто идёт', callback_data=f"{c.data}")
-            ).add(
-                InlineKeyboardButton(text='Главное меню', callback_data='main_menu')
-            ))
-    else:
-        await c.message.answer(f"Кроме вас на это мероприятие больше никто не идет",
-                               reply_markup=InlineKeyboardMarkup(row_width=1).add(
-                                   InlineKeyboardButton(text='Главное меню', callback_data='main_menu')
-                               ))
+    except Exception as e:
+        # print(e)
+        await message.answer("Упс... \n""У вас законфилась подписка \n\nПерейдите в раздел тарифы и оплатите подписку")
 
 
 @dp.message_handler(content_types=['photo'], state=Anketa.photo)
@@ -318,18 +261,6 @@ async def age(message: types.Message, state: FSMContext):
     user.age = message.text
     user.save()
 
-    await ACT.started.set()
-
-    _ck_ = await message.answer('<code>Clearing keyboard...</code>', reply_markup=ReplyKeyboardRemove())
-    await _ck_.delete()
-
-    kb = InlineKeyboardMarkup(row_width=1)
-    link = InlineKeyboardButton(text='Перейти в чат', url='https://vk.com/')
-    places = InlineKeyboardButton(text='К мероприятиям', callback_data='to_ivents')
-    main_menu = InlineKeyboardButton(text='🔙 Главное меню', callback_data='main_menu')
-    kb.add(link, places, main_menu)
-
-    await message.answer('Здесь ты можешь выбрать для себя мероприятие и посмотреть кто еще на него идет. \n' \
-                         'Также у нас есть общий чат',
-                         reply_markup=kb
-                         )
+    await message.answer("Главное меню",
+                                 reply_markup=main_kb)
+    await state.finish()

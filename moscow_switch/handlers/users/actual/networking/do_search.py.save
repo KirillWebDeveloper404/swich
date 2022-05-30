@@ -22,14 +22,19 @@ async def start(c: CallbackQuery, state: FSMContext):
 
         for user in users:
             try:
-                user = User.get(User.tg_id == user)
                 if int(user.tg_id) != int(c.from_user.id) and int(user.age) > 0:
-                    user_list.append(user)
-            except Exception as e:
-                print(user, e)
+                    user_list.append(User.get(User.tg_id == user))
+            except:
+                pass
 
         user = user_list[data['user']]
-
+        Сбивается логика бота, если пользователь вводит номер телефона в ручную,  не через кнопку
+Не срабатывает кнопка посмотреть кто идет 
+Чат добавить в кнопки 
+Не дает выбрать "Я пойду" на несколько мероприятий
+Убрать вес и рост, заменить на поиск по полу (мужчина/женшина)
+Поставить ограничитель на возраст чтобы не заполняли на отъебись 
+При  заявке на нетврокинг у пользователей, убрать номер телефона, пишем ник tg print(user_list, data['user'])
         info = f'#{user.tg_id}\n'
         info += f"Имя: {user.name} \n"
         info += f"Возраст: {user.age} \n"
@@ -54,6 +59,4 @@ async def start(c: CallbackQuery, state: FSMContext):
         await Ivent.networking.set()
 
     except Exception as e:
-        await c.message.answer('К сожалению больше никого нет', reply_markup = InlineKeyboardMarkup().add(
-                                 InlineKeyboardButton(text='Главное меню', callback_data='main_menu')
-                           ))
+        print(e)
